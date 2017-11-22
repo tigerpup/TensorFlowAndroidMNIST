@@ -176,7 +176,7 @@ def read_data_sets(train_dir, fake_data=False, one_hot=False):
   TEST_IMAGES = 't10k-images-idx3-ubyte.gz'
   TEST_LABELS = 't10k-labels-idx1-ubyte.gz'
   VALIDATION_SIZE = 5000
-
+  #make maybe_local file with same logic for maybe_download
   local_file = maybe_download(TRAIN_IMAGES, train_dir)
   train_images = extract_images(local_file)
 
