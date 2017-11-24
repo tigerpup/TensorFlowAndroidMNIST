@@ -57,8 +57,12 @@ TENSORFLOW_METHOD(init)(JNIEnv* env,
 		return 0;
 	}
 	
+	
+
 	const char* const model_cstr = env->GetStringUTFChars(model, NULL);
 	
+	LOG(INFO) << "model cstr :" << model_cstr;
+
 	LOG(INFO) << "Loading Tensorflow.";
 	LOG(INFO) << "Making new SessionOptions.";
 	
@@ -81,6 +85,8 @@ TENSORFLOW_METHOD(init)(JNIEnv* env,
 	
 	ReadFileToProto(asset_manager, model_cstr, &graph_def);
 
+
+	LOG(INFO) << "definined graph " << sizeof(graph_def);
 	LOG(INFO) << "Creating session.";
 
 	tensorflow::Status s = session->Create(graph_def);
