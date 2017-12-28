@@ -73,12 +73,12 @@ with g.as_default():
         if i % 100 == 0:
             train_accuracy = accuracy.eval(
                 {x: batch[0], y_: batch[1], keep_prob: 1.0}, sess)
-            print "step %d, training accuracy %g" % (i, train_accuracy)
+            print("step %d, training accuracy %g" % (i, train_accuracy))
         train_step.run(
             {x: batch[0], y_: batch[1], keep_prob: 0.5}, sess)
 
-    print "test accuracy %g" % accuracy.eval(
-        {x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}, sess)
+    print("test accuracy %g" % accuracy.eval(
+        {x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}, sess))
 
 # Store variable
 _W_conv1 = W_conv1.eval(sess)
@@ -129,5 +129,5 @@ with g_2.as_default():
         correct_prediction_2 = tf.equal(tf.argmax(y_conv_2, 1), tf.argmax(y__2, 1))
         accuracy_2 = tf.reduce_mean(tf.cast(correct_prediction_2, "float"))
 
-        print "check accuracy %g" % accuracy_2.eval(
-            {x_2: mnist.test.images, y__2: mnist.test.labels}, sess)
+        print("check accuracy %g" % accuracy_2.eval(
+            {x_2: mnist.test.images, y__2: mnist.test.labels}, sess))
