@@ -61,9 +61,9 @@ with g.as_default():
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
 
     sess = tf.Session()
-    sess.run(tf.initialize_all_variables())
+    sess.run(tf.global_variables_initializer())
 
-    for i in range(20000):
+    for i in range(10000):
         batch = mnist.train.next_batch(50)
         if i % 100 == 0:
             train_accuracy = accuracy.eval(
@@ -102,7 +102,7 @@ with g_2.as_default():
     b_conv2_2 = tf.constant(_b_conv2, name="constant_b_conv2")
     h_conv2_2 = tf.nn.relu(conv2d(h_pool1_2, W_conv2_2) + b_conv2_2)
     h_pool2_2 = max_pool_2x2(h_conv2_2)
-    
+
     W_fc1_2 = tf.constant(_W_fc1, name="constant_W_fc1")
     b_fc1_2 = tf.constant(_b_fc1, name="constant_b_fc1")
     h_pool2_flat_2 = tf.reshape(h_pool2_2, [-1, 7 * 7 * 64])
@@ -112,20 +112,27 @@ with g_2.as_default():
     b_fc2_2 = tf.constant(_b_fc2, name="constant_b_fc2")
 
     # DropOut is skipped for exported graph.
-    
-    y_conv_2 = tf.nn.softmax(tf.matmul(h_fc1_2, W_fc2_2) + b_fc2_2, name="output")
-    
-    sess_2 = tf.Session()
-    init_2 = tf.initialize_all_variables();
-    sess_2.run(init_2)
 
-    graph_def = g_2.as_graph_def()
-    tf.train.write_graph(graph_def, export_dir, 'expert-graph.pb', as_text=False)
+    y_conv_2 = tf.nn.softmax(tf.matmul(h_fc1_2, W_fc2_2) + b_fc2_2, name="output")
+
+    # sess_2 = tf.Session()
+    init_2 = tf.global_variables_initializer();
+    # sess_2.run(init_2)
+    with tf.Session() as sess:
+        tf.train.write_graph(g_2.as_graph_def(), export_dir, 'expert-graph.pb', as_text=False)
+        y__2 = tf.placeholder("float", [None, 10])
+        correct_prediction_2 = tf.equal(tf.argmax(y_conv_2, 1), tf.argmax(y__2, 1))
+        accuracy_2 = tf.reduce_mean(tf.cast(correct_prediction_2, "float"))
+
+        print "check accuracy %g" % accuracy_2.eval(
+            {x_2: mnist.test.images, y__2: mnist.test.labels}, sess)
+    # graph_def = g_2.as_graph_def()
+
 
     # Test trained model
-    y__2 = tf.placeholder("float", [None, 10])
-    correct_prediction_2 = tf.equal(tf.argmax(y_conv_2, 1), tf.argmax(y__2, 1))
-    accuracy_2 = tf.reduce_mean(tf.cast(correct_prediction_2, "float"))
-
-    print "check accuracy %g" % accuracy_2.eval(
-        {x_2: mnist.test.images, y__2: mnist.test.labels}, sess_2)
+    # y__2 = tf.placeholder("float", [None, 10])
+    # correct_prediction_2 = tf.equal(tf.argmax(y_conv_2, 1), tf.argmax(y__2, 1))
+    # accuracy_2 = tf.reduce_mean(tf.cast(correct_prediction_2, "float"))
+    #
+    # print "check accuracy %g" % accuracy_2.eval(
+    #     {x_2: mnist.test.images, y__2: mnist.test.labels}, sess_2)
